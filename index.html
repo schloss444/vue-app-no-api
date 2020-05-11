@@ -252,6 +252,9 @@ var demo = new Vue({
             // voir MDN (luc) : https://developer.mozilla.org/fr/docs/Web/JavaScript/Reference/Objets_globaux/Array/filter
                 if (((genre == "") || (item.genre == genre) || (item.genre == "")) && ((age == "") || (item.age == age) || (item.age == ""))) {
                     return item;
+                } else {
+                    item.select = false;
+                    item.total = 0;
                 }
             })
 
