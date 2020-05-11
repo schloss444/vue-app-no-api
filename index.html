@@ -253,6 +253,7 @@ var demo = new Vue({
                 if (((genre == "") || (item.genre == genre) || (item.genre == "")) && ((age == "") || (item.age == age) || (item.age == ""))) {
                     return item;
                 } else {
+                    item.active = false;
                     item.select = false;
                     item.total = 0;
                 }
