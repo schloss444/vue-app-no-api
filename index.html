@@ -1,4 +1,15 @@
 
+<!-- DV :  
+Améliorations possibles : 
+- code sémantique (ne pas utiliser "services" par exemple)- calculer un total des prix et non des quantités
+- ajouter un bouton "commander" et faire apparaître alors le récapitulatif de la commande au format json dans la console par exemple
+- mettre en forme notamment la case à cocher dans la liste des articles. 
+
+Ensuite, si tu veux ajouter une autre personne, tu ne pourras plus passer par le filtrage de la liste initiale.
+Il faudra créer un tableau de données associé à la personne. Ca peut aussi être un bon exercice.  
+
+-->
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -46,7 +57,7 @@
     --------------------------*/
 
     form{
-    	background-color: #61a1bc;
+    	background-color: lightslategrey;
     	border-radius: 2px;
     	box-shadow: 0 1px 1px #ccc;
     	width: 400px;
@@ -63,6 +74,13 @@
     	text-shadow:0 3px 0 rgba(0,0,0,0.1);
     }
 
+    form #choix {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content:space-between;
+        background-color: lightgray;
+    }
+
     form ul{
     	list-style:none;
     	color:#fff;
@@ -74,10 +92,15 @@
 
     form ul li{
     	padding:20px 30px;
-    	background-color:#e35885;
+    	background-color:lightsalmon;
     	margin-bottom:8px;
     	box-shadow:0 1px 1px rgba(0,0,0,0.1);
     	cursor:pointer;
+    }
+
+    form ul li input {
+        float:left;
+        margin-right:10px;
     }
 
     form ul li span{
@@ -85,7 +108,7 @@
     }
 
     form ul li.active{
-    	background-color:#8ec16d;
+    	background-color: lightseagreen;
     }
 
     div.total{
@@ -111,73 +134,80 @@
 <form id="main" v-cloak>
 
     <h1>Personal Shopper</h1>
-    
-
-        <p>Vous êtes :</p>
-        <input type="radio" id="male" name="gender" value="male" v-model="genre">
-        <label for="male">Un Homme</label><br>
-        <input type="radio" id="female" name="gender" value="female" v-model="genre">
-        <label for="female">Une Femme</label><br>
-        <input type="radio" id="other" name="gender" value="other" v-model="genre">
-        <label for="other">Autre genre</label>
-
-      
-        <p>Votre âge :</p>
-        <input type="radio" id="age1" name="age" value="0-30" v-model="age">
-        <label for="age1">0 - 30</label><br>
-        <input type="radio" id="age2" name="age" value="30-55" v-model="age">
-        <label for="age2">30-55</label><br>  
-        <input type="radio" id="age3" name="age" value="55-90" v-model="age">
-        <label for="age3">55-90</label><br><br>
-        <input type="submit" value="Submit">
-
-    
+    <div id="choix">
+        <div>
+            <p>Vous êtes :</p>
+            <input type="radio" id="male" name="gender" value="male" v-model="genre">
+            <label for="male">Un Homme</label><br>
+            <input type="radio" id="female" name="gender" value="female" v-model="genre">
+            <label for="female">Une Femme</label><br>
+            <input type="radio" id="other" name="gender" value="other" v-model="genre">
+            <label for="other">Autre genre</label> 
+        </div>
+        <div>
+            <p>Votre âge :</p>
+            <input type="radio" id="age1" name="age" value="0-30" v-model="age">
+            <label for="age1">0 - 30</label><br>
+            <input type="radio" id="age2" name="age" value="30-55" v-model="age">
+            <label for="age2">30-55</label><br>  
+            <input type="radio" id="age3" name="age" value="55-90" v-model="age">
+            <label for="age3">55-90</label><br><br>
+        </div>
+    </div>
 
 	<ul>
 
-		<li v-for="service in filteredServices" v-bind:class="{active : service.active}"> 
+		<li v-for="element in filteredElements" v-bind:class="{active : element.active}"> 
 
-			{{service.name}} 
-			<!-- <input type="number" size = 4 v-model="service.quantite" v-on:change="updateFields()" min=0></input> -->
+			{{element.name}} 
+			<!-- <input type="number" size = 4 v-model="element.quantite" v-on:change="updateFields()" min=0></input> -->
             			
-			<input type="checkbox" size = 4 v-model="service.select" v-on:change="updateFields()"></input>
+			<input type="checkbox" size = 4 v-model="element.select" v-on:change="updateFields()"></input>
 
 
-			<span>{{service.total}}</span> 
+			<span>{{element.total | currency}}</span> 
 
 		</li>
 	</ul>
 
 	<div class="total">
 
-		Total: <span>{{total()}}</span>
+		Total: <span>{{total() | currency}}</span>
         
-	</div>
+    </div>
+    
+    <div>
+        <input type="submit" value="Commander">
+    </div>
 
 </form>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.0.5/vue.min.js"></script>
 <script>
 
+// Define a custom filter called "currency". 
+Vue.filter('currency', function (value) {
+    return '€' + value.toFixed(2); // deux chiffres apres la virgule toFixed(2) -- luc
+});
 
 var demo = new Vue({
     el: '#main',
     data: {
 
-        genre: "male",
+        genre: "",
         age: "",
 
     	// Define the model properties. The view will loop
         // through the services array and generate a li
         // element for every one of its items.
-        services: [
+        elements: [
         	{
         		type: "Chapeau",
                 name: 'Borsalino',
                 genre: "male",
                 age: "30-55",
                 couleur: "bleu",
-        		price: 1,
+        		price: 35.99,
         		active: false,
 				select: false,
 				total: 0
@@ -187,7 +217,7 @@ var demo = new Vue({
                 genre: "female",
                 age: "",
                 couleur: "rose",
-        		price: 1,
+        		price: 124,
         		active: false,
 				select: false,
 				total: 0
@@ -197,7 +227,7 @@ var demo = new Vue({
                 genre: "",
                 age: "",
                 couleur: "vert",
-        		price: 1,
+        		price: 15.99,
         		active: false,
 				select: false,
 				total: 0
@@ -207,7 +237,7 @@ var demo = new Vue({
                 genre: "",
                 age: "30-55",
                 couleur: "noir",
-        		price: 1,
+        		price: 333.33,
         		active: false,
 				select: false,
 				total: 0
@@ -217,7 +247,7 @@ var demo = new Vue({
                 genre: "female",
                 age: "",
                 couleur: "jaune",
-        		price: 1,
+        		price: 69.69,
         		active: false,
 				select: false,
 				total: 0
@@ -227,7 +257,7 @@ var demo = new Vue({
                 genre: "female",
                 age: "",
                 couleur: "jaune",
-        		price: 1,
+        		price: 16.99,
         		active: false,
 				select: false,
 				total: 0
@@ -238,17 +268,17 @@ var demo = new Vue({
 	computed: {
 
         // A computed property that holds only those articles that match the searchString.
-        filteredServices: function () {
-            var services_array = this.services, 
+        filteredElements: function () {
+            var elements_array = this.elements, 
                 genre = this.genre;
                 age = this.age;
 
             if(genre == "" && age == ""){ // (luc) si pas de filtre, on affiche le tableau serivces que l'on a en stock (ici en dur ou par AJAX)
-                return services_array;
+                return elements_array;
             }
 
 
-            services_array = services_array.filter(function(item){ 
+            elements_array = elements_array.filter(function(item){ 
             // voir MDN (luc) : https://developer.mozilla.org/fr/docs/Web/JavaScript/Reference/Objets_globaux/Array/filter
                 if (((genre == "") || (item.genre == genre) || (item.genre == "")) && ((age == "") || (item.age == age) || (item.age == ""))) {
                     return item;
@@ -260,13 +290,13 @@ var demo = new Vue({
             })
 
             // Return an array with the filtered data.
-            return services_array;;
+            return elements_array;;
         },
 
-		totalService: function() {
-			service.total = 0;
-            if (service.select) {service.total = 1};
-			return service.total;
+		totalElements: function() {
+			element.total = 0;
+            if (element.select) {element.total = element.price};
+			return element.total;
 		}
 	},
 
@@ -274,13 +304,13 @@ var demo = new Vue({
 
 		// la fonction est consommatrice en processeur ; mieux utiliser avec le computed (cf le formateur)
 		updateFields: function() {
-			this.services.forEach(function(s){
-                s.active = false;
-                s.total = 0;
+			this.elements.forEach(function(elt){
+                elt.active = false;
+                elt.total = 0;
 
-				if (s.select){
-					s.active = true;
-                    s.total = 1;
+				if (elt.select){
+					elt.active = true;
+                    elt.total = elt.price;
 				} 
 			});
 
@@ -291,9 +321,9 @@ var demo = new Vue({
 
         	var total = 0;
 
-        	this.services.forEach(function(s){ 
-        		if (s.active){
-					total+= s.total;
+        	this.elements.forEach(function(elt){ 
+        		if (elt.active){
+					total+= elt.total;
         		}
         	});
 
