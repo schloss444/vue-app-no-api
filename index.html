@@ -177,7 +177,7 @@ Il faudra créer un tableau de données associé à la personne. Ca peut aussi �
     </div>
     
     <div>
-        <input type="submit" value="Commander">
+        <input type="button" value="Commander" v-on:click = "enregCommande">
     </div>
 
 </form>
@@ -314,7 +314,6 @@ var demo = new Vue({
 				} 
 			});
 
-
 		},
 
     	total: function(){
@@ -328,7 +327,31 @@ var demo = new Vue({
         	});
 
     	   return total;
+        },
+
+        enregCommande: function() {
+
+            console.log("enregCOmmande !");
+
+            var elementJson = '';
+            var texteJson = '';
+            texteJson += '{';
+
+            this.elements.forEach(function(elt){ 
+        		if (elt.active){
+					elementJson+= '{ type : ' + elt.type + ',' + ' name: ' + elt.name + ',' + 'prix :' + elt.price;
+                    texteJson += elementJson;
+                    texteJson += '}';
+        		}
+        
+        	}); 
+            texteJson += '}';
+            var objetJson = texteJson;
+            console.log(objetJson);
+
         }
+
+        
     }
 });
 	
