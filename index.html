@@ -336,6 +336,7 @@ var demo = new Vue({
             texteJson += '{';
 
             var nbElements = 0;
+            var totalCommande = 0;
 
             this.elements.forEach(function(elt){ 
         		if (elt.active){
@@ -343,13 +344,21 @@ var demo = new Vue({
                         texteJson += ','; // pour séparer par rapport l'élément Json précédent
                     }
                     elementJson = '{';
-					elementJson+= ' type : ' + elt.type + ',' + ' name: ' + elt.name + ',' + 'prix :' + elt.price;
+					elementJson+= ' type : ' + elt.type + ',' + ' name: ' + elt.name + ',' + 'prix total :' + elt.total;
                     elementJson += '}';
                     texteJson += elementJson;
                     nbElements ++;
+                    totalCommande += elt.total;
         		}
         
         	}); 
+            // dernier élément Json avec le total et la fonction total()
+            texteJson += ',';
+                    elementJson = '{';
+					elementJson+= ' nbElements : ' + nbElements + ',' + ' total: ' + totalCommande;
+                    elementJson += '}';
+            texteJson += elementJson;
+            //
             texteJson += '}';
             var objetJson = texteJson;
             console.log(objetJson);
