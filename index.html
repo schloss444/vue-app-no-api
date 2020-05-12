@@ -331,17 +331,22 @@ var demo = new Vue({
 
         enregCommande: function() {
 
-            console.log("enregCOmmande !");
-
             var elementJson = '';
             var texteJson = '';
             texteJson += '{';
 
+            var nbElements = 0;
+
             this.elements.forEach(function(elt){ 
         		if (elt.active){
-					elementJson+= '{ type : ' + elt.type + ',' + ' name: ' + elt.name + ',' + 'prix :' + elt.price;
+                    if (nbElements != 0) {
+                        texteJson += ','; // pour séparer par rapport l'élément Json précédent
+                    }
+                    elementJson = '{';
+					elementJson+= ' type : ' + elt.type + ',' + ' name: ' + elt.name + ',' + 'prix :' + elt.price;
+                    elementJson += '}';
                     texteJson += elementJson;
-                    texteJson += '}';
+                    nbElements ++;
         		}
         
         	}); 
