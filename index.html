@@ -193,7 +193,7 @@ Vue.filter('currency', function (value) {
 var demo = new Vue({
     el: '#main',
     data: {
-
+        objetJson = "", // DV sur Json : usage filter de JS et aussi JSON.stringify(obj) ;
         genre: "",
         age: "",
 
@@ -331,37 +331,21 @@ var demo = new Vue({
 
         enregCommande: function() {
 
-            var elementJson = '';
-            var texteJson = '';
-            texteJson += '{';
+            // DV
+            // Il serait plus simple et plus court d'utiliser la fonction filter incluses dans l'objet Array de Javascript.
 
-            var nbElements = 0;
-            var totalCommande = 0;
+            this.objetJson = this.elements.filter(elt => {
+                if(elt.active) {
+                    return true
+                }
+            })
+            // Eventuellement transformer cela en chaîne JSON avec JSON.stringify(obj);
+            this.objetJson = JSON.stringify(this.objetJson);
+            // Plus simple, non ?
+            // FIN DV
+            console.log(this.objetJson);
 
-            this.elements.forEach(function(elt){ 
-        		if (elt.active){
-                    if (nbElements != 0) {
-                        texteJson += ','; // pour séparer par rapport l'élément Json précédent
-                    }
-                    elementJson = '{';
-					elementJson+= ' type : ' + elt.type + ',' + ' name: ' + elt.name + ',' + 'prix total :' + elt.total;
-                    elementJson += '}';
-                    texteJson += elementJson;
-                    nbElements ++;
-                    totalCommande += elt.total;
-        		}
-        
-        	}); 
-            // dernier élément Json avec le total et la fonction total()
-            texteJson += ',';
-                    elementJson = '{';
-					elementJson+= ' nbElements : ' + nbElements + ',' + ' total: ' + totalCommande;
-                    elementJson += '}';
-            texteJson += elementJson;
-            //
-            texteJson += '}';
-            var objetJson = texteJson;
-            console.log(objetJson);
+            return this.objetJson // Modifié pour affichage sur la page
 
         }
 
